@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#007bff">
+    <title>Extrator de Texto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            max-width: 500px;
+            background-color: #f4f4f4;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            resize: none;
+            transition: height 0.2s ease;
+        }
+        .output {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 5px;
+        }
+        button {
+            margin-top: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+        .copied {
+            background: #28a745 !important;
+        }
+        .dark-mode {
+            background-color: #222;
+            color: #ddd;
+        }
+        .dark-mode .output {
+            background: #333;
+            border-color: #555;
+        }
+        .dark-mode button {
+            background: #444;
+            color: #fff;
+        }
+        .dark-mode button:hover {
+            background: #666;
+        }
+        input {
+            position: absolute;
+            left: -9999px;
+        }
+        .dark-mode #inputText {
+            background-color: #555;
+            color: #ddd;
+        }
+        .hidden { 
+            display: none;
+        }
+        .reincidencia {
+            color: #d9534f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Extrator de Texto</h2>
+    <button onclick="toggleDarkMode()">🌙 Modo Escuro</button>
+    <br><br>
+    <textarea id="inputText" placeholder="Cole seu texto aqui..." oninput="autoResizeTextArea()"></textarea>
+    <br>
+    <button onclick="extractData()">Extrair Dados</button>
+    <button onclick="clearFields()">Limpar</button>
+    <button onclick="exportData()">Exportar</button>
+    <br><br>
+    <p>Contador de textos inseridos: <span id="textCount">0</span></p>
+    <p>Última extração: <span id="lastExtractionTime">Nunca</span></p>
+    <button onclick="extractLastData()">Última Extração</button>
+    <button onclick="resetCounter()">Reiniciar Contador</button>
+
+    <br><br>
+    <button onclick="adjustCounter(1)">+</button>
+    <button onclick="adjustCounter(-1)">-</button>
+
+    <div class="output">
+        <p><strong>Contrato:</strong> <span id="contrato"></span> 
+            <button onclick="copyToClipboard('contrato', this)">Copiar</button>
+        </p>
+        <p><strong>Razão Social:</strong> <span id="razaoSocial"></span> 
+            <button onclick="copyToClipboard('razaoSocial', this)">Copiar</button>
+        </p>
+        <p><strong>Endereço:</strong> <span id="endereco"></span> 
+            <button onclick="copyToClipboard('endereco', this)">Copiar</button>
+            <button onclick="openMaps()">🗺 Abrir no Maps</button>
+        </p>
+        <p id="reincidenciaMessage" class="reincidencia hidden"></p>
+    </div>
+
+    <input type="text" id="hiddenInput">
+
+    <script>
+        // Função para verificar reincidências
+        function checkReincidence(newText) {
+            let history = JSON.parse(localStorage.getItem("history") || "[]");
+            let currentDate = new Date().getTime();
+            let reincidenciaCount = 0;
+
+            // Percorre o histórico de textos para verificar se há coincidências dentro de um período de 3 dias
+            history.forEach(entry => {
+                if (newText === entry.text && (currentDate - entry.timestamp) <= 259200000) { // 3 dias em milissegundos
+                    reincidenciaCount++;
+                }
+            });
+
+            return reincidenciaCount;
+        }
+
+        // Armazena um novo texto no histórico
+        function storeTextInHistory(text) {
+            let history = JSON.parse(localStorage.getItem("history") || "[]");
+            let currentDate = new Date().getTime();
+            history.push({ text: text, timestamp: currentDate });
+            localStorage.setItem("history", JSON.stringify(history));
+
+            // Atualiza o contador de textos
+            let textCount = parseInt(localStorage.getItem("textCount") || "0");
+            textCount++;
+            localStorage.setItem("textCount", textCount.toString());
+            document.getElementById("textCount").textContent = textCount;
+
+            // Atualiza o horário da última extração
+            localStorage.setItem("lastExtractionTime", currentDate);
+            document.getElementById("lastExtractionTime").textContent = new Date(currentDate).toLocaleString();
+        }
+
+        // Função para extrair dados do texto e mostrar reincidência
+        function extractData() {
+            let text = document.getElementById("inputText").value;
+
+            // Regex melhorado para capturar texto com acentuação
+            let contrato = text.match(/Contrato:\s*(\d+)/i)?.[1] || "Não encontrado";
+            let razaoSocial = text.match(/Razão\sSocial:\s*([^\n]+)/i)?.[1]?.trim() || "Não encontrado";
+            let endereco = text.match(/Endereço:\s*([\s\S]*?)(?=Contato:|$)/i)?.[1]?.trim() || "Não encontrado";
+
+            // Atualiza os campos na interface
+            document.getElementById("contrato").textContent = contrato;
+            document.getElementById("razaoSocial").textContent = razaoSocial;
+            document.getElementById("endereco").textContent = endereco;
+
+            // Verifica reincidência e exibe a mensagem somente a partir da segunda vez
+            let reincidenciaCount = checkReincidence(text);
+            if (reincidenciaCount > 0) {
+                document.getElementById("reincidenciaMessage").classList.remove("hidden");
+                document.getElementById("reincidenciaMessage").textContent = `Reincidência: ${reincidenciaCount} vez(es) nos últimos 3 dias.`;
+            } else {
+                document.getElementById("reincidenciaMessage").classList.add("hidden");
+            }
+
+            // Armazena o novo texto no histórico e atualiza o contador
+            storeTextInHistory(text);
+        }
+
+        function copyToClipboard(id, btn) {
+            let text = document.getElementById(id).textContent;
+            let hiddenInput = document.getElementById("hiddenInput");
+
+            hiddenInput.value = text;
+            hiddenInput.select();
+            hiddenInput.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+
+            btn.textContent = "Copiado!";
+            btn.classList.add("copied");
+            setTimeout(() => {
+                btn.textContent = "Copiar";
+                btn.classList.remove("copied");
+            }, 1500);
+        }
+
+        function clearFields() {
+            document.getElementById("inputText").value = "";
+            document.getElementById("contrato").textContent = "";
+            document.getElementById("razaoSocial").textContent = "";
+            document.getElementById("endereco").textContent = "";
+            document.getElementById("reincidenciaMessage").classList.add("hidden");
+        }
+
+        function exportData() {
+            let contrato = document.getElementById("contrato").textContent;
+            let razaoSocial = document.getElementById("razaoSocial").textContent;
+            let endereco = document.getElementById("endereco").textContent;
+
+            let content = `Contrato: ${contrato}\nRazão Social: ${razaoSocial}\nEndereço: ${endereco}`;
+            let blob = new Blob([content], { type: "text/plain" });
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "dados_extraidos.txt";
+            a.click();
+        }
+
+        function openMaps() {
+            let endereco = document.getElementById("endereco").textContent;
+            if (endereco === "Não encontrado") {
+                alert("Nenhum endereço encontrado para abrir no Maps.");
+                return;
+            }
+            let url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(endereco);
+            window.open(url, "_blank");
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
+        function autoResizeTextArea() {
+            let textarea = document.getElementById("inputText");
+            textarea.style.height = "auto";
+            textarea.style.height = (textarea.scrollHeight) + "px";
+        }
+
+        // Função para extrair os últimos dados extraídos
+        function extractLastData() {
+            let history = JSON.parse(localStorage.getItem("history") || "[]");
+            if (history.length > 0) {
+                let lastData = history[history.length - 1].text;
+                document.getElementById("inputText").value = lastData;
+                extractData(); // Re-extrair os dados do último texto
+            }
+        }
+
+        // Função para reiniciar o contador
+        function resetCounter() {
+            localStorage.setItem("textCount", "0");
+            document.getElementById("textCount").textContent = "0";
+        }
+
+        // Função para ajustar o contador (+ ou -)
+        function adjustCounter(value) {
+            let currentCount = parseInt(localStorage.getItem("textCount") || "0");
+            currentCount += value;
+            if (currentCount < 0) currentCount = 0;  // Prevenir contador negativo
+            localStorage.setItem("textCount", currentCount.toString());
+            document.getElementById("textCount").textContent = currentCount;
+        }
+
+        // Recupera o contador de textos e histórico ao carregar a página
+        window.onload = function() {
+            let storedTextCount = localStorage.getItem("textCount") || "0";
+            document.getElementById("textCount").textContent = storedTextCount;
+            let storedLastExtractionTime = localStorage.getItem("lastExtractionTime");
+            if (storedLastExtractionTime) {
+                document.getElementById("lastExtractionTime").textContent = new Date(parseInt(storedLastExtractionTime)).toLocaleString();
+            }
+        }
+    </script>
+
+</body>
+</html>
