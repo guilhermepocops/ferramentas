@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
     <title>Gerador de Resumo de Visita</title>
+	
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -84,11 +86,25 @@
             color: #333;
 			
         }
+		.botao {
+  display: inline-block;
+  background-color: #007bff; /* Azul */
+  color: white;
+  padding: 5px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.botao:hover {
+  background-color: #0056b3; /* Azul mais escuro ao passar o mouse */
+}
+
     </style>
 </head>
 <body>
     <h2>Gerador de Resumo de Visita</h2>
-
     <label for="contrato">Contrato:</label>
     <input type="text" id="contrato">
 
@@ -200,6 +216,8 @@
 
     <h3 class="h3-titulo">Último Resumo Gerado</h3>
     <button id="mostrarUltimoResumo" onclick="mostrarUltimoResumo()">MOSTRAR ÚLTIMO RESUMO</button>
+	
+	<a href="index.html" class="botao">Voltar</a>
 
     <script>
          let contadorResumos = localStorage.getItem("contadorResumos") ? parseInt(localStorage.getItem("contadorResumos")) : 0;
