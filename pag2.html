@@ -100,6 +100,10 @@
 .botao:hover {
   background-color: #0056b3; /* Azul mais escuro ao passar o mouse */
 }
+textarea {
+    white-space: pre-wrap;
+}
+
 
     </style>
 </head>
@@ -174,6 +178,10 @@
 
         <label for="mac_nova">MAC da nova ONU:</label>
         <input type="text" id="mac_nova">
+		<div id="supervisorField" style="display: none;">
+        <label for="supervisor">Autorizado pelo supervisor:</label>
+        <input type="text" id="supervisor">
+    </div>
     </div>
 
     <label for="conclusao">Conclusão:</label>
@@ -242,13 +250,16 @@
  function mostrarCamposMAC() {
     let trocaOnu = document.getElementById("troca_onu").value;
     let macFields = document.getElementById("macFields");
+	let supervisorField = document.getElementById("supervisorField"); 
 
     console.log("Troca de ONU selecionada: " + trocaOnu);  // Adicionado para depuração
 
-    if (trocaOnu === "Sim") {
+   if (trocaOnu === "Sim") {
         macFields.style.display = "block";
+        supervisorField.style.display = "block";
     } else {
         macFields.style.display = "none";
+        supervisorField.style.display = "none";
     }
 }
 
@@ -317,6 +328,7 @@
             let tratativa = document.getElementById("tratativa").value;
             let materiais = document.getElementById("materiais").value;
             let troca_onu = document.getElementById("troca_onu").value;
+			let supervisor = document.getElementById("supervisor").value;
             let mac_retirada = document.getElementById("mac_retirada").value;
             let mac_nova = document.getElementById("mac_nova").value;
             let conclusao = document.getElementById("conclusao").value;
@@ -325,7 +337,9 @@
             let resumo = "*RESUMO DE VISITA DE QUALIDADE*\n\n*CTT:* " + contrato + "\n\n*Quem acompanhou visita?* " + acompanhou + "\n\n*ONU instalada:* " + onu_instalada + "\n\n*Ao chegar no local foi constatado:* " + constatado + "\n\n*Tratativa:* " + tratativa + "\n\n*Materiais utilizados:* " + materiais + "\n\n*Houve troca de ONU?* " + (troca_onu === "Sim" ? "✅ Sim" : "❌ Não");
 
             if (troca_onu === "Sim") {
-                resumo += "\n*ONU retirada:* " + mac_retirada + "\n*ONU que está ficando no cliente:* " + mac_nova;
+                resumo += "\n*ONU retirada:* " + mac_retirada + "";
+                resumo += "\n*ONU que está ficando no cliente:* " + mac_nova + "";
+                resumo += "\n*Autorizado pelo supervisor:* " + supervisor + "";
             }
 
             if (constatado === "Cliente contratou ROKU" || constatado === "Cliente contratou ROKU+MESH") {
