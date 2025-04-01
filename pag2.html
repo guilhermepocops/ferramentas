@@ -337,9 +337,10 @@ textarea {
             let resumo = "*RESUMO DE VISITA DE QUALIDADE*\n\n*CTT:* " + contrato + "\n\n*Quem acompanhou visita?* " + acompanhou + "\n\n*ONU instalada:* " + onu_instalada + "\n\n*Ao chegar no local foi constatado:* " + constatado + "\n\n*Tratativa:* " + tratativa + "\n\n*Materiais utilizados:* " + materiais + "\n\n*Houve troca de ONU?* " + (troca_onu === "Sim" ? "✅ Sim" : "❌ Não");
 
             if (troca_onu === "Sim") {
+		resumo += "\n*Autorizado pelo supervisor:* " + supervisor + "";    
                 resumo += "\n*ONU retirada:* " + mac_retirada + "";
                 resumo += "\n*ONU que está ficando no cliente:* " + mac_nova + "";
-                resumo += "\n*Autorizado pelo supervisor:* " + supervisor + "";
+               
             }
 
             if (constatado === "Cliente contratou ROKU" || constatado === "Cliente contratou ROKU+MESH") {
