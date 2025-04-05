@@ -268,6 +268,7 @@ textarea {
             let trocaOnu = document.getElementById("troca_onu");
             let macRetirada = document.getElementById("mac_retirada");
             let macFields = document.getElementById("macFields");
+			let supervisorField = document.getElementById("supervisorField");
             let materiais = document.getElementById("materiais");
 
             // Exibir campo de conclusão manual se "OK" for selecionado
@@ -297,9 +298,13 @@ textarea {
             if (["DEFEITO", "ONU BGN", "ONU AC", "ONU incompatível com plano do cliente"].includes(constatado)) {
                 trocaOnu.value = "Sim";
                 macRetirada.value = document.getElementById("onu_instalada").value;
+				supervisorField.style.display = "block";
                 macFields.style.display = "block";
                 materiais.value = "1 etiqueta de retorno";
             }
+			else {
+        supervisorField.style.display = "none"; // <- Para ocultar quando não for necessário
+    }
         }
         function mostrarCamposMesh() {
     let quantidadeMesh = document.getElementById("quantosMesh").value;  // Captura a quantidade de MESH selecionada
