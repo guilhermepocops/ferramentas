@@ -56,7 +56,7 @@
             display: inline-block;
             margin-top: 10px;
         }
-        }
+        
         #subtrair {
             background-color: #dc3545;
         }
@@ -154,13 +154,12 @@ textarea {
         <option>Feita a instalação de rede mesh</option>
         <option>Configurações de ONU</option>
         <option>Substituição de equipamento</option>
-        <option>Feita a validação com o NOC</option>
+        <option>Feita a validação </option>
         <option>Feita a instalação de ROKU</option>
     </select>
 
     <label for="materiais">Materiais utilizados:</label>
     <select id="materiais">
-        <option>1 etiqueta de retorno</option>
         <option>1 conector APC</option>
         <option>1 conector UPC</option>
         <option>Nenhum material foi utilizado</option>
@@ -190,7 +189,7 @@ textarea {
         <option>Feita a validação com o NOC, e o mesmo enviou o chamado para equipe de sistemas</option>
 		<option>Sem sucesso nas configurações de equipamento, feita a substituição</option>
 		<option>Cliente foi informado pelo call center que trocariamos o aparelho por ser antigo "2.4g". Feita a substituição</option>
-		<option>ONU com baixa performance e pouca amplitudade, feita a troca.</option>
+		<option>ONU com baixa performance e pouca amplitude, feita a troca.</option>
 		<option>O aparelho foi trocado preventivamente, pois apresentava sinais de falha iminente, garantindo que o cliente não fosse impactado por possíveis problemas no futuro.</option>
 		<option>Mesmo após as configurações, cliente ainda solicita aparelho 5GHZ por conta da baixa velocidade no 2.4Ghz, feita a troca.</option>
 		<option>A troca foi realizada para atender à solicitação do cliente e garantir a satisfação com o serviço prestado.</option>
@@ -300,7 +299,7 @@ textarea {
                 macRetirada.value = document.getElementById("onu_instalada").value;
 				supervisorField.style.display = "block";
                 macFields.style.display = "block";
-                materiais.value = "1 etiqueta de retorno";
+                materiais.value = "nenhum";
             }
 			else {
         supervisorField.style.display = "none"; // <- Para ocultar quando não for necessário
