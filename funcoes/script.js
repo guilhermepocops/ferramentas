@@ -1,3 +1,132 @@
+function calcularProximoFimExpediente() {
+  const agora = new Date();
+  const diaSemana = agora.getDay(); // 0=Dom, 1=Seg...6=Sab
+  const fimHoje = new Date(agora);
+
+  // define horário de fim conforme o dia
+  if (diaSemana >= 1 && diaSemana <= 5) {
+    // seg a sex: 17:00
+    fimHoje.setHours(17, 0, 0, 0);
+  } else if (diaSemana === 6) {
+    // sábado: 12:00
+    fimHoje.setHours(12, 0, 0, 0);
+  } else {
+    // domingo: próximo dia útil (segunda às 17h)
+    const proxSeg = new Date(agora);
+    const diasAteSeg = (8 - diaSemana) % 7;
+    proxSeg.setDate(agora.getDate() + diasAteSeg);
+    proxSeg.setHours(17, 0, 0, 0);
+    return proxSeg;
+  }
+
+  // se já passou do fim hoje, ir para o próximo dia útil
+  if (agora >= fimHoje) {
+    const prox = new Date(agora);
+    let dia = diaSemana + 1;
+    prox.setDate(agora.getDate() + 1);
+
+    // se passou de sábado, pula para segunda
+    if (dia === 0 || dia === 7) dia = 1;
+
+    if (dia >= 1 && dia <= 5) {
+      prox.setHours(17, 0, 0, 0);
+    } else if (dia === 6) {
+      prox.setHours(12, 0, 0, 0);
+    }
+    return prox;
+  }
+
+  return fimHoje;
+}
+
+function calcularInicioFimHoje() {
+  const agora = new Date();
+  const diaSemana = agora.getDay(); // 0=Dom, 1=Seg...6=Sab
+  const inicio = new Date(agora);
+  const fim = new Date(agora);
+  
+
+  if (diaSemana >= 1 && diaSemana <= 5) {
+    inicio.setHours(8, 0, 0, 0);
+    fim.setHours(17, 0, 0, 0);
+  } else if (diaSemana === 6) {
+    inicio.setHours(8, 0, 0, 0);
+    fim.setHours(12, 0, 0, 0);
+  } else {
+    return null; // domingo: fora de expediente
+  }
+
+  return { inicio, fim };
+}
+
+function iniciarWorkTimer() {
+  const bar = document.getElementById("workBar");
+  const label = document.getElementById("workBarLabel");
+  if (!bar || !label) return;
+
+  function atualizar() {
+    const agora = new Date();
+    
+    const range = calcularInicioFimHoje();
+    
+
+    if (!range) {
+      bar.style.width = "0%";
+      label.textContent = "Fora do expediente";
+      return;
+    }
+
+    const { inicio, fim } = range;
+
+    if (agora <= inicio) {
+      bar.style.width = "0%";
+      label.textContent = "Expediente ainda não começou";
+      return;
+    }
+
+    if (agora >= fim) {
+      bar.style.width = "100%";
+      label.textContent = "Expediente encerrado";
+      return;
+    }
+
+    const total = fim.getTime() - inicio.getTime();
+    const passado = agora.getTime() - inicio.getTime();
+    const progresso = Math.min(100, Math.max(0, (passado / total) * 100));
+
+    bar.style.width = progresso.toFixed(1) + "%";
+
+    const restanteMs = fim.getTime() - agora.getTime();
+    const mins = Math.floor(restanteMs / 60000);
+    const horas = Math.floor(mins / 60);
+    const minsRest = mins % 60;
+    label.textContent = `Faltam ${horas}h ${minsRest}min`;
+    const progressoInt = Math.round(progresso);
+    label.textContent = `${progressoInt}%  • Faltam ${horas}h ${minsRest}min`;
+  }
+
+  atualizar();
+  setInterval(atualizar, 60 * 1000);
+}
+
+window.addEventListener("load", iniciarWorkTimer);
+
+
+
+
+
+
+
+function abrirAba(id) {
+  document.querySelectorAll('.tab-content').forEach(div => {
+    div.style.display = (div.id === id) ? 'block' : 'none';
+  });
+
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    const alvo = btn.getAttribute('onclick').includes(id);
+    btn.classList.toggle('active', alvo);
+  });
+}
 let contadorResumos = localStorage.getItem("contadorResumos") ? parseInt(localStorage.getItem("contadorResumos")) : 0;
 let ultimoResumo = localStorage.getItem("ultimoResumo") || "";
 let ultimaHoraGeracao = localStorage.getItem("ultimaHoraGeracao") || "Nunca";
@@ -247,11 +376,139 @@ async function salvarResumoFirestore(textoResumo) {
   try {
     await addDoc(collection(db, "resumos"), {
       texto: textoResumo,
+
       criadoEm: new Date().toISOString(),
     });
     console.log("Resumo salvo no Firestore");
   } catch (e) {
     console.error("Erro ao salvar no Firestore:", e);
   }
+}
+
+// ---- HISTÓRICO DE RESUMOS ----
+let _historicoCache = []; // guarda todos os resumos carregados
+
+async function carregarHistoricoResumos() {
+
+  const db = window._db;
+  const { collection, getDocs, query, orderBy } = window._firestoreLib;
+
+  const q = query(collection(db, "resumos"), orderBy("criadoEm", "desc"));
+  const snap = await getDocs(q);
+
+  _historicoCache = [];
+  snap.forEach(doc => {
+    _historicoCache.push({ id: doc.id, ...doc.data() });
+  });
+
+  renderizarListaHistorico(_historicoCache);
+  atualizarContadorHistorico(_historicoCache.length);
+}
+
+function renderizarListaHistorico(lista) {
+  const listaElement = document.getElementById("listaHistorico");
+  if (!listaElement) return;
+
+  listaElement.innerHTML = "";
+
+  let ultimaDataTitulo = null;
+
+  lista.forEach(dados => {
+    const li = document.createElement("li");
+
+    const dataObj = new Date(dados.criadoEm);
+    const dataTitulo = dataObj.toLocaleDateString("pt-BR");
+    const horaStr = dataObj.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+    const contrato = dados.contrato || "sem CTT";
+
+    let textoLimpo = (dados.texto || "").replace("*RESUMO DE VISITA DE QUALIDADE*", "");
+    textoLimpo = textoLimpo.trim();
+    const preview = textoLimpo.slice(0, 80).replace(/\n/g, " ");
+
+    // se mudou o dia, adiciona um cabeçalho de data
+    if (dataTitulo !== ultimaDataTitulo) {
+      ultimaDataTitulo = dataTitulo;
+      const header = document.createElement("li");
+      header.classList.add("hist-date-header");
+      header.textContent = dataTitulo;
+      listaElement.appendChild(header);
+    }
+
+    li.innerHTML = `
+      <div class="hist-card">
+        <div class="hist-row">
+          <span class="hist-date">${horaStr}</span>
+          <span class="hist-ctt">CTT: ${contrato}</span>
+        </div>
+        <div class="hist-row">
+          <span class="hist-preview">${preview}</span>
+          <button class="hist-copy-btn" type="button">📋 Copiar</button>
+        </div>
+      </div>
+    `;
+
+    li.classList.add("hist-item");
+
+    const card = li.querySelector(".hist-card");
+    const btnCopiar = li.querySelector(".hist-copy-btn");
+
+    card.onclick = () => {
+      const campoResumo = document.getElementById("resumo");
+      if (campoResumo) campoResumo.value = dados.texto || "";
+      abrirAba('abaResumo');
+    };
+
+    btnCopiar.onclick = (e) => {
+      e.stopPropagation();
+      navigator.clipboard.writeText(dados.texto || "");
+      mostrarToastCopiado();
+    };
+
+    listaElement.appendChild(li);
+  });
+}
+
+
+
+
+function aplicarFiltroHistorico() {
+  const input = document.getElementById("filtroHistorico");
+  if (!input) return;
+
+  const termo = input.value.toLowerCase();
+
+  if (!termo) {
+    renderizarListaHistorico(_historicoCache);
+    atualizarContadorHistorico(_historicoCache.length);
+    return;
+  }
+
+  const filtrados = _historicoCache.filter(dados => {
+    const contrato = (dados.contrato || "").toLowerCase();
+    const texto = (dados.texto || "").toLowerCase();
+    return contrato.includes(termo) || texto.includes(termo);
+  });
+
+  renderizarListaHistorico(filtrados);
+  atualizarContadorHistorico(filtrados.length);
+}
+
+function mostrarToastCopiado() {
+  const toast = document.getElementById("toastCopiado");
+  if (!toast) return;
+  toast.classList.add("mostrar");
+  setTimeout(() => toast.classList.remove("mostrar"), 1500);
+}
+
+
+function atualizarContadorHistorico(qtd) {
+  const spanNumero = document.getElementById("contadorHistoricoNumero");
+  if (!spanNumero) return;
+  spanNumero.textContent = qtd;
 }
 
