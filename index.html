@@ -7,211 +7,256 @@
   <link rel="stylesheet" href="estilo/style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
-
 </head>
 <body>
+
   <div class="app-shell">
     <header>
       <div class="title-block">
         <h1>Resumo de Visita</h1>
         <span class="subtitle">Gerador de resumo de visita</span>
+        <div id="workTimer" class="work-timer">
+  <div class="work-bar-outer">
+    <div class="work-bar-inner" id="workBar"></div>
+  </div>
+  <span class="work-bar-label" id="workBarLabel"></span>
+  <span class="work-bar-label" id="workBarLabel"></span>
+  <span class="work-bar-date" id="workBarDate"></span>
+
+</div>
+
+
       </div>
-      <span class="badge">Qualidade </span>
+      <span class="tag-pill"> GUILHERME AZEVEDO 🛠 </span>
+
+
     </header>
 
     <main>
-      <div class="section">
-        <div class="section-title">Dados do atendimento</div>
-
-        <div class="field-group">
-          <div class="label-row">
-            <label for="contrato">Contrato</label>
-            <span class="label-hint">ID do cliente</span>
-          </div>
-          <input type="text" id="contrato" placeholder="Ex: 123456">
-        </div>
-
-        <div class="field-group">
-          <label for="acompanhou">Quem acompanhou a visita?</label>
-          <input type="text" id="acompanhou" placeholder="Nome / responsável no local">
-        </div>
-
-        <div class="field-group">
-          <label for="onu_instalada">ONU instalada</label>
-          <input type="text" id="onu_instalada" placeholder="MAC ">
-        </div>
+      <!-- Abas -->
+      <div class="tabs">
+        <button class="tab-button active" onclick="abrirAba('abaResumo')">Resumo</button>
+        <button class="tab-button" onclick="abrirAba('abaHistorico')">Histórico</button>
       </div>
 
-      <div class="section">
-        <div class="section-title">Constatação e tratativa</div>
+      <!-- ABA RESUMO (conteúdo atual) -->
+      <div id="abaResumo" class="tab-content" style="display:block;">
 
-        <div class="field-group">
-          <label for="constatado">Ao chegar no local foi constatado</label>
-          <select id="constatado" onchange="verificarConstatado()">
-            <option>OK</option>
-            <option>DESCONFIGURADO</option>
-            <option>ATENUADO</option>
-            <option>DEFEITO</option>
-            <option>ONU BGN</option>
-            <option>ONU incompatível com plano do cliente</option>
-            <option>Cliente contratou ROKU+MESH</option>
-            <option>Cliente contratou MESH</option>
-            <option>Cliente contratou ROKU</option>
-          </select>
-        </div>
+        <div class="section">
+          <div class="section-title">Dados do atendimento</div>
 
-        <div id="meshFields" class="campo-mesh" style="display:none;">
-          <div class="label-row">
-            <label for="quantosMesh">Rede MESH instalada</label>
-            <span class="label-hint">Informe quantidade</span>
-          </div>
-          <select id="quantosMesh" onchange="mostrarCamposMesh()">
-            <option value="0">Selecione</option>
-            <option value="1">1 unidade</option>
-            <option value="2">2 unidades</option>
-            <option value="3">3 unidades</option>
-            <option value="4">4 unidades</option>
-          </select>
-          <div id="meshMACFields"></div>
-        </div>
-
-        <div id="rokuFields" class="campo-roku" style="display:none;">
-          <label for="rokuSN">Serial Number do ROKU</label>
-          <input type="text" id="rokuSN" placeholder="Informe o SN do equipamento">
-        </div>
-
-        <div class="inline-row field-group">
-          <div>
-            <label for="tratativa">Tratativa</label>
-            <select id="tratativa">
-              <option>Feita a instalação de rede mesh</option>
-              <option>Configurações de ONU</option>
-              <option>Substituição de equipamento</option>
-              <option>Feita a validação </option>
-              <option>Feita a instalação de ROKU</option>
-              <option>Feita a instalação de ROKU+MESH</option>
-            </select>
-          </div>
-          <div>
-            <label for="materiais">Materiais utilizados</label>
-            <select id="materiais">
-              <option>Nenhum material foi utilizado</option>
-              <option>1 conector APC</option>
-              <option>1 conector UPC</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label for="trocaSwitch">Houve troca de ONU?</label>
-<label class="switch">
-  <input type="checkbox" id="trocaSwitch" name="troca_onu">
-  <span class="slider"></span>
-</label>
-<span id="trocaStatus" style="margin-left:8px;">Não</span>
-
-<script>
-  document.getElementById('trocaSwitch').addEventListener('change', function() {
-    document.getElementById('trocaStatus').textContent = this.checked ? 'Sim' : 'Não';
-    mostrarCamposMAC();
-  });
-</script>
-
-
-
-        </div>
-
-        <div id="macFields" style="display:none;">
           <div class="field-group">
-            <label for="mac_retirada">MAC da ONU retirada</label>
-            <input type="text" id="mac_retirada" placeholder="MAC removida do cliente">
+            <div class="label-row">
+              <label for="contrato">Contrato</label>
+              <span class="label-hint">ID do cliente</span>
+            </div>
+            <input type="text" id="contrato" placeholder="Ex: 123456">
           </div>
 
           <div class="field-group">
-            <label for="mac_nova">MAC da nova ONU</label>
-            <input type="text" id="mac_nova" placeholder="MAC instalada no cliente">
+            <label for="acompanhou">Quem acompanhou a visita?</label>
+            <input type="text" id="acompanhou" placeholder="Nome / responsável no local">
           </div>
 
-          <div id="supervisorField" class="field-group" style="display:none;">
-            <label for="supervisor">Autorizado pelo supervisor</label>
-            <input type="text" id="supervisor" placeholder="Nome do supervisor">
+          <div class="field-group">
+            <label for="onu_instalada">ONU instalada</label>
+            <input type="text" id="onu_instalada" placeholder="MAC ">
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Constatação e tratativa</div>
+
+          <div class="field-group">
+            <label for="constatado">Ao chegar no local foi constatado</label>
+            <select id="constatado" onchange="verificarConstatado()">
+              <option>OK</option>
+              <option>DESCONFIGURADO</option>
+              <option>ATENUADO</option>
+              <option>DEFEITO</option>
+              <option>ONU BGN</option>
+              <option>ONU incompatível com plano do cliente</option>
+              <option>Cliente contratou ROKU+MESH</option>
+              <option>Cliente contratou MESH</option>
+              <option>Cliente contratou ROKU</option>
+            </select>
+          </div>
+
+          <div id="meshFields" class="campo-mesh" style="display:none;">
+            <div class="label-row">
+              <label for="quantosMesh">Rede MESH instalada</label>
+              <span class="label-hint">Informe quantidade</span>
+            </div>
+            <select id="quantosMesh" onchange="mostrarCamposMesh()">
+              <option value="0">Selecione</option>
+              <option value="1">1 unidade</option>
+              <option value="2">2 unidades</option>
+              <option value="3">3 unidades</option>
+              <option value="4">4 unidades</option>
+            </select>
+            <div id="meshMACFields"></div>
+          </div>
+
+          <div id="rokuFields" class="campo-roku" style="display:none;">
+            <label for="rokuSN">Serial Number do ROKU</label>
+            <input type="text" id="rokuSN" placeholder="Informe o SN do equipamento">
+          </div>
+
+          <div class="inline-row field-group">
+            <div>
+              <label for="tratativa">Tratativa</label>
+              <select id="tratativa">
+                <option>Feita a instalação de rede mesh</option>
+                <option>Configurações de ONU</option>
+                <option>Substituição de equipamento</option>
+                <option>Feita a validação </option>
+                <option>Feita a instalação de ROKU</option>
+                <option>Feita a instalação de ROKU+MESH</option>
+              </select>
+            </div>
+            <div>
+              <label for="materiais">Materiais utilizados</label>
+              <select id="materiais">
+                <option>Nenhum material foi utilizado</option>
+                <option>1 conector APC</option>
+                <option>1 conector UPC</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="trocaSwitch">Houve troca de ONU?</label>
+            <label class="switch">
+              <input type="checkbox" id="trocaSwitch" name="troca_onu">
+              <span class="slider"></span>
+            </label>
+            <span id="trocaStatus" style="margin-left:8px;">Não</span>
+          </div>
+
+          <div id="macFields" style="display:none;">
+            <div class="field-group">
+              <label for="mac_retirada">MAC da ONU retirada</label>
+              <input type="text" id="mac_retirada" placeholder="MAC removida do cliente">
+            </div>
+
+            <div class="field-group">
+              <label for="mac_nova">MAC da nova ONU</label>
+              <input type="text" id="mac_nova" placeholder="MAC instalada no cliente">
+            </div>
+
+            <div id="supervisorField" class="field-group" style="display:none;">
+              <label for="supervisor">Autorizado pelo supervisor</label>
+              <input type="text" id="supervisor" placeholder="Nome do supervisor">
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Conclusão do atendimento</div>
+
+          <div class="field-group">
+            <label for="conclusao">Conclusão:</label>
+            <select id="conclusao" onchange="verificarConclusao()">
+              <optgroup label="Validação e Medição">
+                <option>Medições nos parâmetros, ONU operando normalmente</option>
+                <option>Feita a validação com o NOC, e o mesmo enviou o chamado para equipe de sistemas</option>
+                <option>Refeito conector, sinal restabelecido. Medições nos parâmetros, ONU operando normalmente. </option>
+              </optgroup>
+
+              <optgroup label="Substituição de Equipamentos">
+                <option>Sem sucesso nas configurações de equipamento, feita a substituição</option>
+                <option>Cliente foi informado pelo call center que trocariamos o aparelho por ser antigo "2.4g". Feita a substituição</option>
+                <option>ONU com baixa performance e pouca amplitude, feita a troca.</option>
+                <option>O aparelho foi trocado preventivamente, pois apresentava sinais de falha iminente, garantindo que o cliente não fosse impactado por possíveis problemas no futuro.</option>
+              </optgroup>
+
+              <optgroup label="Troca por Solicitação do Cliente">
+                <option>A troca foi realizada para atender à solicitação do cliente e garantir a satisfação com o serviço prestado.</option>
+                <option>O cliente relatou dificuldades no uso do aparelho antigo, o que levou à solicitação de uma troca para melhorar a funcionalidade do serviço.</option>
+                <option>A troca foi solicitada para garantir a compatibilidade do equipamento com tecnologias mais recentes e atender às necessidades do cliente.</option>
+                <option>O cliente manifestou uma preferência pessoal por um modelo mais recente, o que levou à solicitação da troca para atender às suas preferências.</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div id="conclusaoManual" style="display:none;">
+            <label for="conclusaoManualInput">Detalhes do que foi feito</label>
+            <textarea id="conclusaoManualInput" placeholder="Descreva brevemente os procedimentos realizados..."></textarea>
+            <p class="note">Este campo aparece quando o status está como OK.</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Ações</div>
+
+          <div class="actions-main">
+            <button id="gerarResumo" onclick="gerarResumo()">GERAR RESUMO</button>
+            <button id="copiar" onclick="copiarResumo()">COPIAR</button>
+          </div>
+
+          <div class="actions-secondary">
+            <button id="limpar" onclick="limparCampos()">Limpar</button>
+            <button id="reiniciar" onclick="reiniciarContador()">Zerar contador</button>
+            <button id="mostrarUltimoResumo" onclick="mostrarUltimoResumo()">Último resumo</button>
+          </div>
+
+          <div class="resultado">
+            <textarea id="resumo" readonly placeholder="O resumo gerado aparecerá aqui..."></textarea>
+          </div>
+
+          <div class="stats">
+            <span>Resumos gerados hoje: <strong id="contadorResumos">0</strong></span>
+            <span>Atualizado em: <strong id="ultimaHora">Nunca</strong></span>
           </div>
         </div>
       </div>
 
-      <div class="section">
-        <div class="section-title">Conclusão do atendimento</div>
+      <!-- ABA HISTÓRICO -->
+      <!-- ABA HISTÓRICO -->
+      <div id="abaHistorico" class="tab-content" style="display:none;">
 
-        <div class="field-group">
-          <label for="conclusao">Conclusão:</label>
-<select id="conclusao" onchange="verificarConclusao()">
-  <optgroup label="Validação e Medição">
-    <option>Medições nos parâmetros, ONU operando normalmente</option>
-    <option>Feita a validação com o NOC, e o mesmo enviou o chamado para equipe de sistemas</option>
-    <option>Refeito conector, sinal restabelecido. Medições nos parâmetros, ONU operando normalmente. </option>
+        <div class="section">
+          <div class="section-title-row">
+            <div class="section-title">
+              Histórico de resumos
+              <span id="contadorHistorico" class="hist-count-badge">
+                TOTAL: <span id="contadorHistoricoNumero">0</span>
+              </span>
+            </div>
 
-  </optgroup>
+            <button id="btnCarregarHistorico" onclick="carregarHistoricoResumos()">Carregar histórico</button>
+          </div>
 
-  <optgroup label="Substituição de Equipamentos">
-    <option>Sem sucesso nas configurações de equipamento, feita a substituição</option>
-    <option>Cliente foi informado pelo call center que trocariamos o aparelho por ser antigo "2.4g". Feita a substituição</option>
-    <option>ONU com baixa performance e pouca amplitude, feita a troca.</option>
-    <option>O aparelho foi trocado preventivamente, pois apresentava sinais de falha iminente, garantindo que o cliente não fosse impactado por possíveis problemas no futuro.</option>
-  </optgroup>
+          <div class="field-group" style="margin-top:10px;">
+            <label for="filtroHistorico">Filtrar por CTT ou texto</label>
+            <input
+              type="text"
+              id="filtroHistorico"
+              placeholder="Digite parte do contrato ou palavra‑chave"
+              oninput="aplicarFiltroHistorico()">
+          </div>
 
-  <optgroup label="Troca por Solicitação do Cliente">
-    <option>A troca foi realizada para atender à solicitação do cliente e garantir a satisfação com o serviço prestado.</option>
-    <option>O cliente relatou dificuldades no uso do aparelho antigo, o que levou à solicitação de uma troca para melhorar a funcionalidade do serviço.</option>
-    <option>A troca foi solicitada para garantir a compatibilidade do equipamento com tecnologias mais recentes e atender às necessidades do cliente.</option>
-    <option>O cliente manifestou uma preferência pessoal por um modelo mais recente, o que levou à solicitação da troca para atender às suas preferências.</option>
-  </optgroup>
-</select>
+          <ul id="listaHistorico"></ul>
         </div>
 
-        <div id="conclusaoManual" style="display:none;">
-          <label for="conclusaoManualInput">Detalhes do que foi feito</label>
-          <textarea id="conclusaoManualInput" placeholder="Descreva brevemente os procedimentos realizados..."></textarea>
-          <p class="note">Este campo aparece quando o status está como OK.</p>
-        </div>
       </div>
 
-      <div class="section">
-        <div class="section-title">Ações</div>
 
-        <div class="actions-main">
-          <button id="gerarResumo" onclick="gerarResumo()">GERAR RESUMO</button>
-          <button id="copiar" onclick="copiarResumo()">COPIAR</button>
-        </div>
 
-        <div class="actions-secondary">
-          <button id="limpar" onclick="limparCampos()">Limpar</button>
-          <button id="reiniciar" onclick="reiniciarContador()">Zerar contador</button>
-          <button id="mostrarUltimoResumo" onclick="mostrarUltimoResumo()">Último resumo</button>
-        </div>
-
-        <div class="resultado">
-          <textarea id="resumo" readonly placeholder="O resumo gerado aparecerá aqui..."></textarea>
-        </div>
-
-        <div class="stats">
-          <span>Resumos gerados: <strong id="contadorResumos">0</strong></span>
-          <span>Última geração: <strong id="ultimaHora">Nunca</strong></span>
-        </div>
-      </div>
     </main>
 
     <footer>
       <a href="index.html" class="back-link">
         <span>⟵</span>
-        <span class="back-link-text">Voltar para ferramentas</span>
+        <span class="back-link-text">Voltar </span>
       </a>
       <span style="font-size:11px;color:var(--text-muted);">
-        Otimizado para uso em campo
+        desenvolvido por: Guilherme Azevedo 
       </span>
     </footer>
   </div>
-    <!-- Firebase + Firestore -->
+
+  <!-- Firebase + Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -228,16 +273,13 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // deixa disponível para o script.js
     window._db = db;
     window._firestoreLib = { collection, addDoc, getDocs, query, orderBy };
   </script>
 
   <!-- Seu JS principal -->
   <script src="funcoes/script.js"></script>
+  <div id="toastCopiado" class="toast-copiado">Resumo copiado!</div>
+
 </body>
 </html>
-
-  <!-- Seu JavaScript original, reaproveitado -->
-  
-
