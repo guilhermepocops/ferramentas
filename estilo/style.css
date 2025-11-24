@@ -149,7 +149,7 @@ textarea {
   width: 100%;
   padding: 9px 10px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(75,85,99,0.8);
+  border: 1px solid rgba(59, 98, 228, 0.486);
   background-color: var(--input-bg);
   color: var(--text-color);
   font-size: 13px;
@@ -647,7 +647,267 @@ input:checked + .slider:before {
   transform: translateX(22px);
 }
 
+#listaHistorico {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hist-item {
+  margin-bottom: 8px;
+}
+
+.hist-card {
+  background: #121826;
+  border-radius: 6px;
+  padding: 8px 10px;
+  border: 1px solid #293445;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.hist-card:hover {
+  background: #1b2233;
+  border-color: #3b82f6;
+}
+
+.hist-date {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.hist-preview {
+  font-size: 13px;
+  color: #e5e7eb;
+  display: block;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 
+.hist-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hist-ctt {
+  font-size: 11px;
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+
+
+#listaHistorico {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+
+.hist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hist-copy-btn {
+  padding: 4px 12px;
+  font-size: 11px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #111827;
+  color: #e5e7eb;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+}
+
+.hist-copy-btn:hover {
+  background: #1f2937;
+  border-color: #3b82f6;
+}
+
+.hist-copy-btn:active {
+  transform: scale(0.97);
+}
+
+
+.toast-copiado {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111827;
+  color: #e5e7eb;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #3b82f6;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.toast-copiado.mostrar {
+  opacity: 1;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tab-button {
+  padding: 6px 18px;
+  font-size: 13px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #020617;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.05s;
+}
+
+.tab-button:hover {
+  background: #0b1220;
+  border-color: #64748b;
+}
+
+.tab-button.active {
+  background: #f9fafb;
+  color: #020617;
+  border-color: #f9fafb;
+  transform: translateY(-1px);
+}
+
+
+
+#btnCarregarHistorico {
+  padding: 6px 18px;
+  font-size: 13px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #111827;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+}
+
+#btnCarregarHistorico:hover {
+  background: #1f2937;
+  border-color: #3b82f6;
+}
+
+#btnCarregarHistorico:active {
+  transform: scale(0.98);
+}
+
+
+.hist-date-header {
+  list-style: none;
+  margin: 12px 0 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+
+.work-timer {
+  margin-top: 6px;
+}
+
+.work-bar-outer {
+  width: 180px;
+  height: 8px;
+  border-radius: 999px;
+  background: #020617;
+  border: 1px solid #334155;
+  overflow: hidden;
+}
+
+.work-bar-inner {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1d4ed8, #3b82f6, #60a5fa, #93c5fd);
+  transition: width 0.4s;
+}
+
+
+
+.work-bar-label {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  color: #9ca3af;
+  
+}
+
+
+.work-bar-label {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.work-bar-date {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+
+
+
+
+.hist-count-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #111827;
+  border: 1px solid #334155;
+  font-size: 11px;
+  color: #e5e7eb;
+}
+
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hist-count-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #111827;
+  border: 1px solid #334155;
+  font-size: 11px;
+  color: #e5e7eb;
+}
+
+.tag-pill {
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid #254ec0;
+  background: rgba(15, 23, 42, 0.8);
+  color: #ffffff;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: default;
+}
 
 
