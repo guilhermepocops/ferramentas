@@ -11,21 +11,6 @@
 
 </head>
 <body>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('#conclusao, #constatado,#tratativa,#materiais').forEach(function(select) {
-      new Choices(select, {
-        searchEnabled: true,      // busca liberada
-        shouldSort: false,        // mantém a ordem original
-        itemSelectText: '',       // remove texto extra
-        position: 'auto'
-      });
-      if (select.id === "tratativa") choicesTratativa = choicesInstance; // Guarda a instância!
-    });
-  });
-</script>
-
-
   <div class="app-shell">
     <header>
       <div class="title-block">
@@ -255,3 +240,4 @@
 
   <!-- Seu JavaScript original, reaproveitado -->
   
+
